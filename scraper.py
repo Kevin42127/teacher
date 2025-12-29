@@ -370,10 +370,10 @@ class ProfessorScraper:
                                 department = text
                                 break
                 
-                if name and email and self.is_valid_name(name):
+                if name and email and self.is_professor_name(name):
                     final_department = department or default_department or ''
                     
-                    if final_department or len(professors) < 50:
+                    if final_department and '@' in email:
                         professors.append({
                             'name': name,
                             'email': email,
@@ -450,7 +450,7 @@ class ProfessorScraper:
                                     if self.is_valid_name(potential_name):
                                         name = potential_name
                     
-                    if name and email and self.is_valid_name(name):
+                    if name and email and self.is_professor_name(name):
                         department = None
                         parent = link.find_parent(['div', 'li', 'td', 'article', 'section'])
                         if parent:
@@ -462,11 +462,12 @@ class ProfessorScraper:
                                     break
                         
                         final_department = department or default_department or ''
-                        professors.append({
-                            'name': name,
-                            'email': email,
-                            'department': final_department
-                        })
+                        if final_department and '@' in email:
+                            professors.append({
+                                'name': name,
+                                'email': email,
+                                'department': final_department
+                            })
                 except Exception as e:
                     continue
         
@@ -691,13 +692,18 @@ class ProfessorScraper:
                     default_department
                 )
                 if prof_data and prof_data['email']:
-                    if self.is_professor_name(prof_data['name']):
-                        professors.append(prof_data)
-                        print(f"    ✓ 找到 Email: {prof_data['email']}")
-                    else:
-                        print(f"    ✗ 姓名驗證失敗")
+                if self.is_professor_name(prof_data['name']) and prof_data.get('email') and prof_data.get('department'):
+                    professors.append(prof_data)
+                    print(f"    ✓ 找到: {prof_data['name']} | {prof_data['email']} | {prof_data['department']}")
                 else:
-                    print(f"    ✗ 未找到 Email")
+                    missing = []
+                    if not self.is_professor_name(prof_data['name']):
+                        missing.append('姓名格式')
+                    if not prof_data.get('email'):
+                        missing.append('Email')
+                    if not prof_data.get('department'):
+                        missing.append('科系')
+                    print(f"    ✗ 驗證失敗: 缺少 {', '.join(missing)}")
                 time.sleep(0.5)
             
             return professors
