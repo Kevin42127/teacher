@@ -27,7 +27,56 @@ python app.py
 
 開啟瀏覽器訪問: `http://localhost:5000`
 
-## Vercel 部署
+## Heroku 部署（推薦 - 支援完整功能）
+
+### 部署步驟
+
+1. **安裝 Heroku CLI**
+   - 下載：https://devcenter.heroku.com/articles/heroku-cli
+   - 或使用：`npm install -g heroku`
+
+2. **登入 Heroku**
+```bash
+heroku login
+```
+
+3. **創建 Heroku 應用**
+```bash
+heroku create your-app-name
+```
+
+4. **設置 Buildpacks**
+```bash
+heroku buildpacks:add heroku/python
+heroku buildpacks:add heroku/google-chrome
+```
+
+5. **部署到 Heroku**
+```bash
+git push heroku main
+```
+
+6. **開啟應用**
+```bash
+heroku open
+```
+
+### 或使用 GitHub 自動部署
+
+1. 在 [Heroku Dashboard](https://dashboard.heroku.com/apps) 創建新應用
+2. 在 Settings → Deploy 中連接 GitHub 倉庫
+3. 啟用自動部署（Automatic deploys）
+4. 點擊 "Deploy Branch" 手動部署
+
+### Heroku 優勢
+
+✅ **完整功能支援**：
+- ✅ 支援 Selenium 和 Chrome
+- ✅ 支援深度爬蟲功能
+- ✅ 完整 Python 環境
+- ✅ 免費方案可用
+
+## Vercel 部署（功能受限）
 
 ### 部署步驟
 
@@ -57,14 +106,6 @@ vercel --prod
 - Vercel serverless 環境不支援 Selenium
 - 深度爬蟲功能（點擊連結進入詳細頁面）在 Vercel 上無法使用
 - 僅支援靜態 HTML 頁面的直接採集
-
-### 替代方案
-
-如果需要完整功能（包括 Selenium），建議使用：
-- **Heroku** - 支援完整 Python 環境
-- **Railway** - 支援 Docker 和完整依賴
-- **Render** - 免費 Python 應用託管
-- **DigitalOcean App Platform** - 支援完整功能
 
 ## 使用方式
 

@@ -17,4 +17,5 @@ test_output.*
 *.swp
 chromedriver*
 geckodriver*
-
+.vercel/
+.heroku/
