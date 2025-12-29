@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教授資料採集平台</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <main class="main-content">
+            <header class="page-header">
+                <h1>教授資料採集平台</h1>
+                <p>快速採集教授資訊</p>
+            </header>
+
+            <section class="control-section">
+                <div class="input-group">
+                    <input 
+                        type="url" 
+                        id="urlInput" 
+                        class="input-field"
+                        placeholder="請輸入大學網站網址（例如：https://www.nptu.edu.tw 或系所網頁）"
+                        autocomplete="off"
+                    >
+                </div>
+                <button id="scrapeBtn" class="btn btn-primary">
+                    <span class="material-icons">search</span>
+                    開始採集
+                </button>
+            </section>
+            
+            <div id="notification" class="notification"></div>
+
+            <section class="results-section">
+                <div class="section-header">
+                    <h2>採集結果 (<span id="totalCount">0</span>)</h2>
+                    <button id="exportBtn" class="btn btn-secondary" style="display: none;">
+                        <span class="material-icons">download</span>
+                        匯出 Excel
+                    </button>
+                </div>
+
+                <div id="loadingState" class="loading-state" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>正在採集資料...</p>
+                </div>
+
+                <div id="emptyState" class="empty-state">
+                    <span class="material-icons">inbox</span>
+                    <p>尚無採集資料</p>
+                    <small>請輸入網址並開始採集</small>
+                </div>
+
+                <div id="resultsTable" class="data-table-container" style="display: none;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th width="60">#</th>
+                                <th>姓名</th>
+                                <th>Email</th>
+                                <th>科系</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
+
