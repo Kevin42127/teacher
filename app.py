@@ -13,10 +13,17 @@ CORS(app)
 def index():
     return render_template('index.html')
 
-@app.route('/api/scrape', methods=['POST'])
+@app.route('/health')
+def health():
+    return jsonify({'status': 'ok', 'service': 'professor-scraper'}), 200
+
+@app.route('/api/scrape', methods=['POST', 'GET'])
 def scrape():
+    if request.method == 'GET':
+        return jsonify({'message': '請使用 POST 方法', 'endpoint': '/api/scrape'}), 200
+    
     try:
-        data = request.get_json()
+        data = request.get_json() or {}
         url = data.get('url', '').strip()
         export_format = data.get('format', 'csv').lower()
         
@@ -27,7 +34,10 @@ def scrape():
         professors = scraper.scrape(url)
         
         if not professors:
-            return jsonify({'error': '未找到教授資料，請檢查網址或嘗試其他頁面'}), 404
+            return jsonify({
+                'error': '未找到教授資料，請檢查網址或嘗試其他頁面',
+                'suggestion': '請確認網頁包含教授的 Email 資訊'
+            }), 404
         
         return jsonify({
             'success': True,
@@ -38,8 +48,10 @@ def scrape():
     except Exception as e:
         return jsonify({'error': f'處理失敗: {str(e)}'}), 500
 
-@app.route('/api/export', methods=['POST'])
+@app.route('/api/export', methods=['POST', 'GET'])
 def export():
+    if request.method == 'GET':
+        return jsonify({'message': '請使用 POST 方法', 'endpoint': '/api/export'}), 200
     try:
         data = request.get_json()
         professors = data.get('data', [])
