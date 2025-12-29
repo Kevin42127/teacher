@@ -27,57 +27,82 @@ python app.py
 
 開啟瀏覽器訪問: `http://localhost:5000`
 
-## Railway 部署（推薦 - 支援完整功能）
+## Fly.io 部署（推薦 - 支援完整功能）
 
 ### 部署步驟
 
-1. **註冊 Railway 帳號**
-   - 訪問：https://railway.app
-   - 使用 GitHub 帳號登入
+1. **安裝 Fly CLI**
+```bash
+# Windows (PowerShell)
+iwr https://fly.io/install.ps1 -useb | iex
 
-2. **創建新專案**
-   - 在 Dashboard 點擊 "New Project"
-   - 選擇 "Deploy from GitHub repo"
-   - 選擇倉庫：`Kevin42127/collection`
+# 或使用其他安裝方式
+# https://fly.io/docs/hands-on/install-flyctl/
+```
 
-3. **自動部署**
-   - Railway 會自動偵測 Python 專案
-   - 自動使用 Dockerfile 構建
-   - 自動安裝 Chrome 和依賴
-   - 自動設置環境變數
+2. **登入 Fly.io**
+```bash
+fly auth login
+```
 
-4. **環境變數**（自動設置，無需手動配置）
-   - `PORT`: Railway 自動設置
-   - `CHROMIUM_PATH`: `/usr/bin/chromium`
-   - `CHROMEDRIVER_PATH`: `/usr/bin/chromedriver`
+3. **初始化應用**
+```bash
+fly launch
+```
+   - 會自動偵測 Dockerfile
+   - 輸入應用名稱（或使用預設）
+   - 選擇區域（建議選擇 `hkg` 或 `nrt` 亞洲區域）
 
-5. **查看部署**
-   - 在 Dashboard 查看構建日誌
-   - 部署完成後會顯示訪問 URL
+4. **部署**
+```bash
+fly deploy
+```
 
-### Railway 優勢
+5. **查看應用**
+```bash
+fly open
+```
+
+### Fly.io 優勢
 
 ✅ **完整功能支援**：
 - ✅ 支援 Selenium 和 Chrome（已配置）
 - ✅ 支援深度爬蟲功能
 - ✅ 完整 Python 環境
-- ✅ 免費額度 $5/月
+- ✅ 免費額度（3 個共享 CPU 應用）
+- ✅ 全球邊緣部署
 - ✅ 自動 HTTPS
-- ✅ 自動部署（GitHub push 觸發）
+- ✅ 自動擴展
 - ✅ 無需信用卡即可開始
 
 ### 價格
 
-- **免費額度**: $5/月
-- **按使用量計費**: 超出額度後才收費
+- **免費額度**: 3 個共享 CPU 應用
+- **按使用量計費**: 超出免費額度後才收費
 - **預估**: 輕量使用可能完全免費
 
 ### 配置說明
 
 專案已包含：
 - `Dockerfile` - 自動安裝 Chrome 和依賴
-- `railway.json` - Railway 配置文件
+- `fly.toml` - Fly.io 配置文件
 - 所有深度爬蟲功能已就緒
+
+### 常用命令
+
+```bash
+# 查看應用狀態
+fly status
+
+# 查看日誌
+fly logs
+
+# 重啟應用
+fly restart
+
+# 查看應用資訊
+fly info
+```
 
 ## Vercel 部署（功能受限）
 
