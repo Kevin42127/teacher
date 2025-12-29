@@ -207,44 +207,29 @@ class ProfessorScraper:
             if re.search(pattern, text, re.IGNORECASE):
                 return False
         
-        if any(keyword in text for keyword in ['兼任', '專任', '客座', '榮譽', '特聘', '講座', '師資']):
-            if len(text) <= 12:
-                return False
+        excluded_keywords = ['教師', '教授', '老師', '講師', '助理', '主任', '院長', '校長', '兼任', '專任', '客座', '榮譽', '特聘', '講座', '師資', '職稱', '職位']
+        if any(keyword in text for keyword in excluded_keywords):
+            return False
         
         chinese_count = sum('\u4e00' <= c <= '\u9fff' for c in text)
         alpha_count = sum(c.isalpha() for c in text)
         
         if chinese_count >= 2 and chinese_count <= 4:
-            chinese_surnames = ['王', '李', '張', '劉', '陳', '楊', '黃', '趙', '吳', '周', 
-                               '徐', '孫', '馬', '朱', '胡', '林', '郭', '何', '高', '羅',
-                               '鄭', '梁', '謝', '宋', '唐', '許', '韓', '馮', '鄧', '曹',
-                               '彭', '曾', '肖', '田', '董', '袁', '潘', '於', '蔣', '蔡',
-                               '余', '杜', '葉', '程', '蘇', '魏', '呂', '丁', '任', '沈',
-                               '方', '石', '姚', '譚', '廖', '鄒', '熊', '金', '陸', '郝',
-                               '孔', '白', '崔', '康', '毛', '邱', '秦', '江', '史', '顧',
-                               '侯', '邵', '孟', '龍', '萬', '段', '雷', '錢', '湯', '尹',
-                               '黎', '易', '常', '武', '喬', '賀', '賴', '龔', '文', '龐']
-            if text[0] in chinese_surnames:
-                excluded_keywords = ['教師', '教授', '老師', '講師', '助理', '主任', '院長', '校長', '兼任', '專任', '客座', '榮譽', '特聘', '講座', '師資', '職稱', '職位']
-                if not any(keyword in text for keyword in excluded_keywords):
-                    return True
-            
             if chinese_count == 2 or chinese_count == 3:
-                excluded_keywords = ['教師', '教授', '老師', '講師', '助理', '主任', '院長', '校長', '兼任', '專任', '客座', '榮譽', '特聘', '講座', '師資', '職稱', '職位']
-                if not any(keyword in text for keyword in excluded_keywords):
-                    return True
+                return True
         
-        if alpha_count >= 3 and alpha_count <= 30:
+        if alpha_count >= 2 and alpha_count <= 30:
             words = text.split()
             if len(words) >= 1 and len(words) <= 4:
                 if all(len(word) >= 2 for word in words):
                     text_lower = text.lower()
-                    if not any(keyword in text_lower for keyword in ['teacher', 'professor', 'lecturer', 'instructor', 'assistant', 'director', 'dean', 'chair']):
+                    if not any(keyword in text_lower for keyword in ['teacher', 'professor', 'lecturer', 'instructor', 'assistant', 'director', 'dean', 'chair', 'staff', 'faculty']):
                         if len(words) == 1:
-                            if len(words[0]) >= 3 and words[0][0].isupper():
+                            if len(words[0]) >= 2 and words[0][0].isupper():
                                 return True
                         else:
-                            return True
+                            if all(word[0].isupper() for word in words if word):
+                                return True
         
         return False
     
