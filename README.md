@@ -27,55 +27,57 @@ python app.py
 
 開啟瀏覽器訪問: `http://localhost:5000`
 
-## Render 部署（推薦 - 支援完整功能）
+## Railway 部署（推薦 - 支援完整功能）
 
 ### 部署步驟
 
-1. **註冊 Render 帳號**
-   - 訪問：https://render.com
+1. **註冊 Railway 帳號**
+   - 訪問：https://railway.app
    - 使用 GitHub 帳號登入
 
-2. **創建新 Web Service**
-   - 在 Dashboard 點擊 "New +" → "Web Service"
-   - 連接 GitHub 倉庫：`Kevin42127/collection`
+2. **創建新專案**
+   - 在 Dashboard 點擊 "New Project"
+   - 選擇 "Deploy from GitHub repo"
+   - 選擇倉庫：`Kevin42127/collection`
 
-3. **配置設置**
-   - **Name**: `professor-scraper`（或自訂名稱）
-   - **Region**: 選擇最近的區域
-   - **Branch**: `main`
-   - **Root Directory**: 留空（使用根目錄）
-   - **Runtime**: `Python 3`
-   - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `gunicorn app:app`
+3. **自動部署**
+   - Railway 會自動偵測 Python 專案
+   - 自動使用 Dockerfile 構建
+   - 自動安裝 Chrome 和依賴
+   - 自動設置環境變數
 
-4. **環境變數**（可選）
-   - `PYTHON_VERSION`: `3.11.0`
-   - `PORT`: `10000`（Render 會自動設置）
+4. **環境變數**（自動設置，無需手動配置）
+   - `PORT`: Railway 自動設置
+   - `CHROMIUM_PATH`: `/usr/bin/chromium`
+   - `CHROMEDRIVER_PATH`: `/usr/bin/chromedriver`
 
-5. **選擇方案**
-   - **Free**: 免費方案（適合測試）
-   - **Starter**: $7/月（推薦生產環境）
+5. **查看部署**
+   - 在 Dashboard 查看構建日誌
+   - 部署完成後會顯示訪問 URL
 
-6. **部署**
-   - 點擊 "Create Web Service"
-   - Render 會自動從 GitHub 部署
-
-### Render 優勢
+### Railway 優勢
 
 ✅ **完整功能支援**：
-- ✅ 支援 Selenium 和 Chrome（需配置）
+- ✅ 支援 Selenium 和 Chrome（已配置）
 - ✅ 支援深度爬蟲功能
 - ✅ 完整 Python 環境
-- ✅ 免費方案可用
+- ✅ 免費額度 $5/月
 - ✅ 自動 HTTPS
 - ✅ 自動部署（GitHub push 觸發）
+- ✅ 無需信用卡即可開始
 
-### 配置 Chrome/Selenium（可選）
+### 價格
 
-如果需要完整 Selenium 功能，在 Build Command 中添加：
-```bash
-pip install -r requirements.txt && apt-get update && apt-get install -y chromium-browser chromium-chromedriver
-```
+- **免費額度**: $5/月
+- **按使用量計費**: 超出額度後才收費
+- **預估**: 輕量使用可能完全免費
+
+### 配置說明
+
+專案已包含：
+- `Dockerfile` - 自動安裝 Chrome 和依賴
+- `railway.json` - Railway 配置文件
+- 所有深度爬蟲功能已就緒
 
 ## Vercel 部署（功能受限）
 
