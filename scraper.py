@@ -490,19 +490,34 @@ class ProfessorScraper:
     def _deduplicate(self, professors: List[Dict[str, str]]) -> List[Dict[str, str]]:
         seen = set()
         unique_professors = []
+        filtered_count = 0
+        
+        print(f"去重前: {len(professors)} 筆")
         
         for prof in professors:
-            if not self.is_valid_name(prof['name']):
+            if not prof.get('name') or not prof.get('email'):
+                filtered_count += 1
+                continue
+            
+            if not self.is_professor_name(prof['name']):
+                filtered_count += 1
+                print(f"  過濾: '{prof['name']}' (不符合教授姓名格式)")
                 continue
             
             name_clean = re.sub(r'\s+', ' ', prof['name']).strip()
             email_clean = prof['email'].strip().lower()
+            
+            if not name_clean or not email_clean:
+                filtered_count += 1
+                continue
             
             key = (name_clean.lower(), email_clean)
             if key not in seen:
                 seen.add(key)
                 prof['name'] = name_clean
                 unique_professors.append(prof)
+        
+        print(f"去重後: {len(unique_professors)} 筆 (過濾了 {filtered_count} 筆)")
         
         return unique_professors
     
@@ -726,7 +741,12 @@ class ProfessorScraper:
         soup = BeautifulSoup(html, 'lxml')
         professors = self.parse_professor_info(soup, url)
         
-        print(f"解析結果: {len(professors)} 筆")
+        print(f"初步解析結果: {len(professors)} 筆")
+        
+        if professors:
+            print(f"前 3 筆範例:")
+            for i, prof in enumerate(professors[:3], 1):
+                print(f"  {i}. 姓名: {prof.get('name', 'N/A')} | Email: {prof.get('email', 'N/A')}")
         
         if not professors and not self.use_selenium:
             print("嘗試使用 Selenium 動態渲染...")
@@ -734,8 +754,10 @@ class ProfessorScraper:
             html = self.fetch_page(url)
             if html:
                 soup = BeautifulSoup(html, 'lxml')
-                professors = self.parse_professor_info(soup, url)
-                print(f"Selenium 解析結果: {len(professors)} 筆")
+                selenium_professors = self.parse_professor_info(soup, url)
+                print(f"Selenium 解析結果: {len(selenium_professors)} 筆")
+                if selenium_professors:
+                    professors.extend(selenium_professors)
             self.use_selenium = False
         
         if not professors or len(professors) < 3:
