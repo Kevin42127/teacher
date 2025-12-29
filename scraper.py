@@ -538,7 +538,7 @@ class ProfessorScraper:
                         email = em
                         break
             
-            if email and name:
+            if email and name and department and self.is_professor_name(name) and '@' in email:
                 return {
                     'name': name,
                     'email': email,
