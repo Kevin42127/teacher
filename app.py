@@ -36,7 +36,8 @@ def scrape():
         if not professors:
             return jsonify({
                 'error': '未找到教授資料，請檢查網址或嘗試其他頁面',
-                'suggestion': '請確認網頁包含教授的 Email 資訊'
+                'suggestion': '請確認網頁包含教授的 Email 資訊',
+                'tip': '請查看 Cloud Run 應用日誌以獲取詳細的調試資訊'
             }), 404
         
         return jsonify({
