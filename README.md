@@ -27,81 +27,91 @@ python app.py
 
 開啟瀏覽器訪問: `http://localhost:5000`
 
-## Fly.io 部署（推薦 - 支援完整功能）
+## Google Cloud Run 部署（推薦 - 支援完整功能）
 
 ### 部署步驟
 
-1. **安裝 Fly CLI**
-```bash
-# Windows (PowerShell)
-iwr https://fly.io/install.ps1 -useb | iex
+1. **安裝 Google Cloud SDK**
+   - 下載：https://cloud.google.com/sdk/docs/install
+   - 或使用：`gcloud components install`
 
-# 或使用其他安裝方式
-# https://fly.io/docs/hands-on/install-flyctl/
+2. **登入 Google Cloud**
+```bash
+gcloud auth login
+gcloud config set project YOUR_PROJECT_ID
 ```
 
-2. **登入 Fly.io**
+3. **啟用必要的 API**
 ```bash
-fly auth login
+gcloud services enable cloudbuild.googleapis.com
+gcloud services enable run.googleapis.com
+gcloud services enable containerregistry.googleapis.com
 ```
 
-3. **初始化應用**
+4. **使用 Cloud Build 部署**
 ```bash
-fly launch
-```
-   - 會自動偵測 Dockerfile
-   - 輸入應用名稱（或使用預設）
-   - 選擇區域（建議選擇 `hkg` 或 `nrt` 亞洲區域）
-
-4. **部署**
-```bash
-fly deploy
+gcloud builds submit --config cloudbuild.yaml
 ```
 
-5. **查看應用**
+### 或使用 gcloud 直接部署
+
 ```bash
-fly open
+# 構建並推送映像
+gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/professor-scraper
+
+# 部署到 Cloud Run
+gcloud run deploy professor-scraper \
+  --image gcr.io/YOUR_PROJECT_ID/professor-scraper \
+  --platform managed \
+  --region asia-east1 \
+  --allow-unauthenticated \
+  --memory 1Gi \
+  --timeout 300
 ```
 
-### Fly.io 優勢
+### Cloud Run 優勢
 
 ✅ **完整功能支援**：
 - ✅ 支援 Selenium 和 Chrome（已配置）
 - ✅ 支援深度爬蟲功能
 - ✅ 完整 Python 環境
-- ✅ 免費額度（3 個共享 CPU 應用）
-- ✅ 全球邊緣部署
+- ✅ 免費額度（每月 200 萬請求）
+- ✅ 自動擴展到零（不計費）
 - ✅ 自動 HTTPS
-- ✅ 自動擴展
-- ✅ 無需信用卡即可開始
+- ✅ 全球多區域部署
+- ✅ 企業級可靠性
 
 ### 價格
 
-- **免費額度**: 3 個共享 CPU 應用
-- **按使用量計費**: 超出免費額度後才收費
+- **免費額度**: 
+  - 每月 200 萬請求
+  - 360,000 GB-秒記憶體
+  - 180,000 vCPU-秒
+- **超出後**: 按使用量計費
 - **預估**: 輕量使用可能完全免費
 
 ### 配置說明
 
 專案已包含：
 - `Dockerfile` - 自動安裝 Chrome 和依賴
-- `fly.toml` - Fly.io 配置文件
+- `cloudbuild.yaml` - Cloud Build 配置文件
+- `.dockerignore` - Docker 構建優化
 - 所有深度爬蟲功能已就緒
 
 ### 常用命令
 
 ```bash
-# 查看應用狀態
-fly status
+# 查看服務狀態
+gcloud run services list
 
 # 查看日誌
-fly logs
+gcloud run services logs read professor-scraper --region asia-east1
 
-# 重啟應用
-fly restart
+# 更新服務
+gcloud run deploy professor-scraper --image gcr.io/YOUR_PROJECT_ID/professor-scraper
 
-# 查看應用資訊
-fly info
+# 刪除服務
+gcloud run services delete professor-scraper --region asia-east1
 ```
 
 ## Vercel 部署（功能受限）
