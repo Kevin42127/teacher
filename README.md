@@ -27,54 +27,55 @@ python app.py
 
 開啟瀏覽器訪問: `http://localhost:5000`
 
-## Heroku 部署（推薦 - 支援完整功能）
+## Render 部署（推薦 - 支援完整功能）
 
 ### 部署步驟
 
-1. **安裝 Heroku CLI**
-   - 下載：https://devcenter.heroku.com/articles/heroku-cli
-   - 或使用：`npm install -g heroku`
+1. **註冊 Render 帳號**
+   - 訪問：https://render.com
+   - 使用 GitHub 帳號登入
 
-2. **登入 Heroku**
-```bash
-heroku login
-```
+2. **創建新 Web Service**
+   - 在 Dashboard 點擊 "New +" → "Web Service"
+   - 連接 GitHub 倉庫：`Kevin42127/collection`
 
-3. **創建 Heroku 應用**
-```bash
-heroku create your-app-name
-```
+3. **配置設置**
+   - **Name**: `professor-scraper`（或自訂名稱）
+   - **Region**: 選擇最近的區域
+   - **Branch**: `main`
+   - **Root Directory**: 留空（使用根目錄）
+   - **Runtime**: `Python 3`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn app:app`
 
-4. **設置 Buildpacks**
-```bash
-heroku buildpacks:add heroku/python
-heroku buildpacks:add heroku/google-chrome
-```
+4. **環境變數**（可選）
+   - `PYTHON_VERSION`: `3.11.0`
+   - `PORT`: `10000`（Render 會自動設置）
 
-5. **部署到 Heroku**
-```bash
-git push heroku main
-```
+5. **選擇方案**
+   - **Free**: 免費方案（適合測試）
+   - **Starter**: $7/月（推薦生產環境）
 
-6. **開啟應用**
-```bash
-heroku open
-```
+6. **部署**
+   - 點擊 "Create Web Service"
+   - Render 會自動從 GitHub 部署
 
-### 或使用 GitHub 自動部署
-
-1. 在 [Heroku Dashboard](https://dashboard.heroku.com/apps) 創建新應用
-2. 在 Settings → Deploy 中連接 GitHub 倉庫
-3. 啟用自動部署（Automatic deploys）
-4. 點擊 "Deploy Branch" 手動部署
-
-### Heroku 優勢
+### Render 優勢
 
 ✅ **完整功能支援**：
-- ✅ 支援 Selenium 和 Chrome
+- ✅ 支援 Selenium 和 Chrome（需配置）
 - ✅ 支援深度爬蟲功能
 - ✅ 完整 Python 環境
 - ✅ 免費方案可用
+- ✅ 自動 HTTPS
+- ✅ 自動部署（GitHub push 觸發）
+
+### 配置 Chrome/Selenium（可選）
+
+如果需要完整 Selenium 功能，在 Build Command 中添加：
+```bash
+pip install -r requirements.txt && apt-get update && apt-get install -y chromium-browser chromium-chromedriver
+```
 
 ## Vercel 部署（功能受限）
 

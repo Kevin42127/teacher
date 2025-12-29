@@ -18,4 +18,3 @@ test_output.*
 chromedriver*
 geckodriver*
 .vercel/
-.heroku/
