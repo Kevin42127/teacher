@@ -139,11 +139,11 @@ class ProfessorScraper:
         ]
         
         title_keywords = [
-            '教師', '教授', '老師', '講師', '助理', '主任', '院長', '校長',
+            '教師', '教授', '老師', '講師', '助理', '主任', '院長', '校長', '師資',
             'teacher', 'professor', 'lecturer', 'instructor', 'assistant',
             '兼任', '專任', '客座', '榮譽', '特聘', '講座',
             'part-time', 'full-time', 'visiting', 'honorary', 'emeritus',
-            '職稱', '職位', 'title', 'position', 'rank'
+            '職稱', '職位', 'title', 'position', 'rank', 'staff', 'faculty'
         ]
         
         text_lower = text.lower()
@@ -152,8 +152,11 @@ class ProfessorScraper:
                 return False
         
         for keyword in title_keywords:
-            if keyword in text and len(text) <= 10:
-                return False
+            if keyword in text:
+                if len(text) <= 15:
+                    return False
+                if text.startswith(keyword) or text.endswith(keyword):
+                    return False
         
         date_patterns = [
             r'\d{4}[-/]\d{1,2}[-/]\d{1,2}',
@@ -192,13 +195,20 @@ class ProfessorScraper:
         title_patterns = [
             r'^兼任.*', r'^專任.*', r'^客座.*', r'^榮譽.*', r'^特聘.*', r'^講座.*',
             r'.*教師$', r'.*教授$', r'.*老師$', r'.*講師$', r'.*助理$', r'.*主任$',
-            r'.*院長$', r'.*校長$', r'.*職稱$', r'.*職位$',
+            r'.*院長$', r'.*校長$', r'.*職稱$', r'.*職位$', r'.*師資$',
             r'^Part-time', r'^Full-time', r'^Visiting', r'^Honorary',
-            r'Teacher$', r'Professor$', r'Lecturer$', r'Instructor$'
+            r'Teacher$', r'Professor$', r'Lecturer$', r'Instructor$',
+            r'^兼任', r'^專任', r'^客座', r'^榮譽', r'^特聘', r'^講座',
+            r'教師$', r'教授$', r'老師$', r'講師$', r'助理$', r'主任$',
+            r'院長$', r'校長$', r'師資$'
         ]
         
         for pattern in title_patterns:
-            if re.match(pattern, text, re.IGNORECASE):
+            if re.search(pattern, text, re.IGNORECASE):
+                return False
+        
+        if any(keyword in text for keyword in ['兼任', '專任', '客座', '榮譽', '特聘', '講座', '師資']):
+            if len(text) <= 12:
                 return False
         
         chinese_count = sum('\u4e00' <= c <= '\u9fff' for c in text)
@@ -215,11 +225,13 @@ class ProfessorScraper:
                                '侯', '邵', '孟', '龍', '萬', '段', '雷', '錢', '湯', '尹',
                                '黎', '易', '常', '武', '喬', '賀', '賴', '龔', '文', '龐']
             if text[0] in chinese_surnames:
-                if not any(keyword in text for keyword in ['教師', '教授', '老師', '講師', '助理', '主任', '院長', '校長']):
+                excluded_keywords = ['教師', '教授', '老師', '講師', '助理', '主任', '院長', '校長', '兼任', '專任', '客座', '榮譽', '特聘', '講座', '師資', '職稱', '職位']
+                if not any(keyword in text for keyword in excluded_keywords):
                     return True
             
             if chinese_count == 2 or chinese_count == 3:
-                if not any(keyword in text for keyword in ['教師', '教授', '老師', '講師', '助理', '主任', '院長', '校長', '兼任', '專任']):
+                excluded_keywords = ['教師', '教授', '老師', '講師', '助理', '主任', '院長', '校長', '兼任', '專任', '客座', '榮譽', '特聘', '講座', '師資', '職稱', '職位']
+                if not any(keyword in text for keyword in excluded_keywords):
                     return True
         
         if alpha_count >= 3 and alpha_count <= 30:
