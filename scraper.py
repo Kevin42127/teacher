@@ -137,9 +137,22 @@ class ProfessorScraper:
             'home', 'index', 'about', 'news', 'event', 'course',
             '首頁', '關於', '聯絡', '新聞', '課程', '研究', '下載'
         ]
+        
+        title_keywords = [
+            '教師', '教授', '老師', '講師', '助理', '主任', '院長', '校長',
+            'teacher', 'professor', 'lecturer', 'instructor', 'assistant',
+            '兼任', '專任', '客座', '榮譽', '特聘', '講座',
+            'part-time', 'full-time', 'visiting', 'honorary', 'emeritus',
+            '職稱', '職位', 'title', 'position', 'rank'
+        ]
+        
         text_lower = text.lower()
         for keyword in invalid_keywords:
             if keyword in text_lower:
+                return False
+        
+        for keyword in title_keywords:
+            if keyword in text and len(text) <= 10:
                 return False
         
         date_patterns = [
@@ -176,6 +189,18 @@ class ProfessorScraper:
         
         text = text.strip()
         
+        title_patterns = [
+            r'^兼任.*', r'^專任.*', r'^客座.*', r'^榮譽.*', r'^特聘.*', r'^講座.*',
+            r'.*教師$', r'.*教授$', r'.*老師$', r'.*講師$', r'.*助理$', r'.*主任$',
+            r'.*院長$', r'.*校長$', r'.*職稱$', r'.*職位$',
+            r'^Part-time', r'^Full-time', r'^Visiting', r'^Honorary',
+            r'Teacher$', r'Professor$', r'Lecturer$', r'Instructor$'
+        ]
+        
+        for pattern in title_patterns:
+            if re.match(pattern, text, re.IGNORECASE):
+                return False
+        
         chinese_count = sum('\u4e00' <= c <= '\u9fff' for c in text)
         alpha_count = sum(c.isalpha() for c in text)
         
@@ -190,20 +215,24 @@ class ProfessorScraper:
                                '侯', '邵', '孟', '龍', '萬', '段', '雷', '錢', '湯', '尹',
                                '黎', '易', '常', '武', '喬', '賀', '賴', '龔', '文', '龐']
             if text[0] in chinese_surnames:
-                return True
+                if not any(keyword in text for keyword in ['教師', '教授', '老師', '講師', '助理', '主任', '院長', '校長']):
+                    return True
             
             if chinese_count == 2 or chinese_count == 3:
-                return True
+                if not any(keyword in text for keyword in ['教師', '教授', '老師', '講師', '助理', '主任', '院長', '校長', '兼任', '專任']):
+                    return True
         
         if alpha_count >= 3 and alpha_count <= 30:
             words = text.split()
             if len(words) >= 1 and len(words) <= 4:
                 if all(len(word) >= 2 for word in words):
-                    if len(words) == 1:
-                        if len(words[0]) >= 3 and words[0][0].isupper():
+                    text_lower = text.lower()
+                    if not any(keyword in text_lower for keyword in ['teacher', 'professor', 'lecturer', 'instructor', 'assistant', 'director', 'dean', 'chair']):
+                        if len(words) == 1:
+                            if len(words[0]) >= 3 and words[0][0].isupper():
+                                return True
+                        else:
                             return True
-                    else:
-                        return True
         
         return False
     
