@@ -27,10 +27,14 @@ class ProfessorCrawler:
             raise ValueError("需要提供 Groq API Key，請設定環境變數 GROQ_API_KEY 或使用 --api-key 參數")
         
         self.client = Groq(api_key=self.api_key)
-        self.crawler = AsyncWebCrawler(
-            headless=True,
-            verbose=False
-        )
+        try:
+            self.crawler = AsyncWebCrawler(
+                headless=True,
+                verbose=False
+            )
+        except Exception as e:
+            print(f"初始化爬蟲時發生錯誤: {e}")
+            raise
     
     def _extract_with_groq(self, content: str) -> List[ProfessorInfo]:
         prompt = f"""請從以下網頁內容中提取教授的資訊。請只提取 4 位教授的資訊。

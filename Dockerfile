@@ -45,14 +45,14 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN playwright install chromium
-RUN playwright install-deps chromium
+RUN python -m playwright install chromium
+RUN python -m playwright install-deps chromium
+
+RUN python -c "from playwright.sync_api import sync_playwright; p = sync_playwright().start(); browser = p.chromium.launch(headless=True); print(f'Browser executable: {browser.executable_path}'); browser.close(); p.stop(); print('Playwright verification successful')"
 
 COPY . .
 
 ENV PORT=8080
-ENV PLAYWRIGHT_BROWSERS_PATH=0
-ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=0
 
 EXPOSE 8080
 
