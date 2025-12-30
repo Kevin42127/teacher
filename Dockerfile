@@ -48,8 +48,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN python -m playwright install chromium
 RUN python -m playwright install-deps chromium
 
-RUN python -c "from playwright.sync_api import sync_playwright; p = sync_playwright().start(); browser = p.chromium.launch(headless=True); print(f'Browser executable: {browser.executable_path}'); browser.close(); p.stop(); print('Playwright verification successful')"
-
 COPY . .
 
 ENV PORT=8080
