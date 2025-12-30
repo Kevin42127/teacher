@@ -1,167 +1,169 @@
-# 大學教授資料採集系統
+# 大學教授資訊採集機器人
 
-專業的網頁爬蟲工具，用於採集大學網站上的教授資訊（姓名、Email、科系），支援匯出為 CSV 格式。
+使用 Crawl4AI 從大學網站上自動提取教授的姓名、電子郵件和科系資訊，並匯出為 CSV 或 JSON 格式。
 
-## 功能特點
+## 功能特色
 
-- 🎯 智能解析多種大學網站結構
-- 📊 支援 CSV 格式匯出
-- 🌐 支援臺灣及國際大學網站
-- ⚡ 多執行緒並行處理提升效率
-- 🎨 現代化網頁操作介面
-- 🔍 即時預覽採集結果
+- 自動爬取大學網站並提取教授資訊
+- 支援提取姓名、電子郵件、科系等欄位
+- 匯出為 CSV 或 JSON 格式
+- 支援臺灣及其他國家的大學網站
+- 使用 AI 模型智能解析網頁內容
 
-## 本地開發
+## 安裝步驟
 
-### 安裝依賴
+### 1. 安裝 Python 依賴
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 啟動應用
+### 2. 安裝 Playwright 瀏覽器
+
+```bash
+playwright install
+```
+
+### 3. 設定 AI 模型 API Key
+
+建立 `.env` 檔案並加入對應的 API Key（根據您選擇的模型）：
+
+```
+# OpenAI 模型
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Anthropic Claude 模型
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+
+# Google Gemini 模型
+GOOGLE_API_KEY=your_google_api_key_here
+
+# Groq AI 模型
+GROQ_API_KEY=your_groq_api_key_here
+```
+
+**支援的模型：**
+- **OpenAI**: GPT-4o Mini, GPT-4, GPT-3.5 Turbo
+- **Anthropic**: Claude 3 Sonnet, Claude 3 Opus, Claude 3 Haiku
+- **Google**: Gemini Pro, Gemini 1.5 Pro, Gemini 1.5 Flash
+- **Groq**: Llama 3.1 70B Versatile, Llama 3.1 8B Instant, Mixtral 8x7B, Gemma 7B IT
+
+在網頁介面中也可以直接輸入 API Key，或使用命令列參數 `--api-key`。
+
+## 使用方法
+
+### 網頁介面（推薦）
+
+1. 啟動後端伺服器：
 
 ```bash
 python app.py
 ```
 
-開啟瀏覽器訪問: `http://localhost:5000`
+2. 開啟瀏覽器訪問：
 
-## Google Cloud Run 部署（推薦 - 支援完整功能）
-
-### 部署步驟
-
-1. **安裝 Google Cloud SDK**
-   - 下載：https://cloud.google.com/sdk/docs/install
-   - 或使用：`gcloud components install`
-
-2. **登入 Google Cloud**
-```bash
-gcloud auth login
-gcloud config set project YOUR_PROJECT_ID
+```
+http://localhost:5000
 ```
 
-3. **啟用必要的 API**
-```bash
-gcloud services enable cloudbuild.googleapis.com
-gcloud services enable run.googleapis.com
-gcloud services enable containerregistry.googleapis.com
-```
+3. 在網頁介面中輸入大學網站網址，點擊「開始採集」按鈕
 
-4. **使用 Cloud Build 部署**
-```bash
-gcloud builds submit --config cloudbuild.yaml
-```
+4. 採集完成後，可以點擊「匯出 Excel」按鈕下載 CSV 檔案
 
-### 或使用 gcloud 直接部署
+### 命令列介面
+
+#### 基本用法
 
 ```bash
-# 構建並推送映像
-gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/professor-scraper
-
-# 部署到 Cloud Run
-gcloud run deploy professor-scraper \
-  --image gcr.io/YOUR_PROJECT_ID/professor-scraper \
-  --platform managed \
-  --region asia-east1 \
-  --allow-unauthenticated \
-  --memory 1Gi \
-  --timeout 300
+python professor_crawler.py <大學網站URL>
 ```
 
-### Cloud Run 優勢
-
-✅ **完整功能支援**：
-- ✅ 支援 Selenium 和 Chrome（已配置）
-- ✅ 支援深度爬蟲功能
-- ✅ 完整 Python 環境
-- ✅ 免費額度（每月 200 萬請求）
-- ✅ 自動擴展到零（不計費）
-- ✅ 自動 HTTPS
-- ✅ 全球多區域部署
-- ✅ 企業級可靠性
-
-### 價格
-
-- **免費額度**: 
-  - 每月 200 萬請求
-  - 360,000 GB-秒記憶體
-  - 180,000 vCPU-秒
-- **超出後**: 按使用量計費
-- **預估**: 輕量使用可能完全免費
-
-### 配置說明
-
-專案已包含：
-- `Dockerfile` - 自動安裝 Chrome 和依賴
-- `cloudbuild.yaml` - Cloud Build 配置文件
-- `.dockerignore` - Docker 構建優化
-- 所有深度爬蟲功能已就緒
-
-### 常用命令
+### 指定輸出格式
 
 ```bash
-# 查看服務狀態
-gcloud run services list
+# 只匯出 JSON
+python professor_crawler.py <URL> --format json
 
-# 查看日誌
-gcloud run services logs read professor-scraper --region asia-east1
+# 只匯出 CSV
+python professor_crawler.py <URL> --format csv
 
-# 更新服務
-gcloud run deploy professor-scraper --image gcr.io/YOUR_PROJECT_ID/professor-scraper
-
-# 刪除服務
-gcloud run services delete professor-scraper --region asia-east1
+# 同時匯出兩種格式（預設）
+python professor_crawler.py <URL> --format both
 ```
 
-## Vercel 部署（功能受限）
+### 指定輸出檔名
 
-### 部署步驟
-
-1. **安裝 Vercel CLI**（如果尚未安裝）
 ```bash
-npm i -g vercel
+python professor_crawler.py <URL> --output my_professors
 ```
 
-2. **登入 Vercel**
+### 使用 API Key 和模型參數
+
 ```bash
-vercel login
+# 使用自訂 API Key
+python professor_crawler.py <URL> --api-key your_api_key
+
+# 指定不同的 AI 模型
+python professor_crawler.py <URL> --provider anthropic/claude-3-sonnet
+python professor_crawler.py <URL> --provider google/gemini-pro
 ```
 
-3. **部署到 Vercel**
+## 使用範例
+
 ```bash
-vercel
+# 爬取臺灣大學教授資訊
+python professor_crawler.py https://www.ntu.edu.tw/faculty
+
+# 指定輸出檔名和格式
+python professor_crawler.py https://www.nthu.edu.tw/faculty --output nthu_professors --format json
 ```
 
-4. **生產環境部署**
-```bash
-vercel --prod
+## 輸出格式
+
+### JSON 格式
+
+```json
+[
+  {
+    "name": "王小明",
+    "email": "wang@university.edu.tw",
+    "department": "資訊工程學系"
+  },
+  {
+    "name": "李美麗",
+    "email": "lee@university.edu.tw",
+    "department": "電機工程學系"
+  }
+]
 ```
 
-### 注意事項
+### CSV 格式
 
-⚠️ **重要限制**：
-- Vercel serverless 環境不支援 Selenium
-- 深度爬蟲功能（點擊連結進入詳細頁面）在 Vercel 上無法使用
-- 僅支援靜態 HTML 頁面的直接採集
+```csv
+name,email,department
+王小明,wang@university.edu.tw,資訊工程學系
+李美麗,lee@university.edu.tw,電機工程學系
+```
 
-## 使用方式
+## 注意事項
 
-1. 在輸入框貼上大學系所網頁 URL
-2. 點擊「開始採集」按鈕
-3. 等待處理完成後查看結果
-4. 點擊「匯出 Excel」下載 CSV 檔案
+- 請確保遵守目標網站的 robots.txt 和使用條款
+- 某些網站可能有反爬蟲機制，可能需要調整爬取策略
+- 需要有效的 AI 模型 API Key 才能使用（OpenAI、Anthropic 或 Google）
+- 建議在爬取前先確認目標網站的結構和內容格式
+- 不同模型的成本和效能可能不同，請根據需求選擇合適的模型
 
-## 技術棧
+## 技術架構
 
-- Backend: Python + Flask
-- Frontend: HTML5 + CSS3 + JavaScript
-- 爬蟲: BeautifulSoup4
-- 資料處理: Pandas
+### 後端
+- **Flask**: Web 框架
+- **Crawl4AI**: 網頁爬取框架
+- **Playwright**: 瀏覽器自動化
+- **OpenAI GPT-4o-mini**: AI 內容提取
+- **Pydantic**: 資料驗證和模型定義
 
-## 支援的網站類型
+### 前端
+- **HTML/CSS/JavaScript**: 現代化網頁介面
+- **Google Material Icons**: 圖標系統
+- **響應式設計**: 支援各種螢幕尺寸
 
-- 臺灣各大學系所網站
-- 教師介紹頁面
-- 師資陣容列表
-- 通用學術網站結構

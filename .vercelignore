@@ -3,19 +3,12 @@ __pycache__/
 *.pyo
 *.pyd
 .Python
-venv/
 env/
-ENV/
-*.csv
-*.json
-.git/
-.vscode/
-.idea/
-*.swp
-*.log
-chromedriver*
-geckodriver*
-test_*.py
-serve_*.py
-demo_*.html
+venv/
+.venv
+.env
+*.md
+!README.md
+test_urls.md
+detect_anti_crawler.md
 
