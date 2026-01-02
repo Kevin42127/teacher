@@ -430,24 +430,42 @@
                 });
 
                 if (response.ok) {
-                    const data = await response.json();
-                    if (data.success && data.data) {
-                        const csvContent = atob(data.data);
-                        const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const contentType = response.headers.get('content-type');
+                    
+                    if (contentType && contentType.includes('application/json')) {
+                        const data = await response.json();
+                        if (data.success && data.data) {
+                            const csvContent = atob(data.data);
+                            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = data.filename || 'professors.csv';
+                            document.body.appendChild(a);
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                            document.body.removeChild(a);
+                        } else {
+                            showError(data.error || '匯出失敗');
+                        }
+                    } else {
+                        const blob = await response.blob();
                         const url = window.URL.createObjectURL(blob);
                         const a = document.createElement('a');
                         a.href = url;
-                        a.download = data.filename || 'professors.csv';
+                        a.download = 'professors.csv';
                         document.body.appendChild(a);
                         a.click();
                         window.URL.revokeObjectURL(url);
                         document.body.removeChild(a);
-                    } else {
-                        showError(data.error || '匯出失敗');
                     }
                 } else {
-                    const data = await response.json();
-                    showError(data.error || '匯出失敗');
+                    try {
+                        const data = await response.json();
+                        showError(data.error || '匯出失敗');
+                    } catch (e) {
+                        showError('匯出失敗: ' + response.statusText);
+                    }
                 }
             } catch (error) {
                 showError('匯出失敗: ' + error.message);
